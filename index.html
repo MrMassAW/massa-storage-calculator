@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Massa Network Storage Calculator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-top: 15px;
+            font-weight: bold;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        #results {
+            margin-top: 30px;
+        }
+        #error {
+            color: #e74c3c;
+            margin-top: 15px;
+            font-weight: bold;
+        }
+        .summary {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            line-height: 1.8;
+        }
+        .summary strong {
+            color: #2c3e50;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #2c3e50;
+            color: white;
+        }
+        tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Massa Network Storage Calculator</h1>
+        <form id="storageForm">
+            <label for="megabits">Storage size (in megabits):</label>
+            <input type="number" id="megabits" required value="1000">
+            
+            <label for="days">Duration (in days):</label>
+            <input type="number" id="days" required value="30">
+            
+            <label for="customPrice">Custom Massa price (USD, optional):</label>
+            <input type="number" id="customPrice" step="0.0001" placeholder="Leave blank to use current market price">
+        </form>
+        
+        <div id="error"></div>
+        <div id="results"></div>
+    </div>
+
+    <script>
+        const ROLL_PRICE = 0.1;  // price in Massa per roll
+        const ROLL_SPACE = 32 * 1024 * 1024;  // 32 MiB in bits
+        const CYCLE_BLOCKS = 128;  // blocks per cycle
+        const SLOTS_PER_BLOCK = 32;  // slots per block
+        const SLOT_DURATION = 0.5;  // seconds
+        
+        let massaPrice = null;
+        
+        async function getMassaPrice() {
+            try {
+                const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=massa&vs_currencies=usd');
+                const data = await response.json();
+                return data.massa.usd;
+            } catch (error) {
+                console.error('Error fetching Massa price:', error);
+                return null;
+            }
+        }
+        
+        function calculateStorage(megabits, days, massaPrice) {
+            const bits = megabits * 1000000;
+            const cyclesPerDay = 24 * 3600 / (CYCLE_BLOCKS * SLOTS_PER_BLOCK * SLOT_DURATION);
+            const cycles = Math.ceil(days * cyclesPerDay);
+            
+            const rollsNeeded = Math.ceil(bits / ROLL_SPACE);
+            const massaCost = rollsNeeded * ROLL_PRICE;
+            const usdCost = massaCost * massaPrice;
+            
+            const totalCost = usdCost * cycles;
+            const refund = totalCost * ((cycles - 1) / cycles);
+            
+            return {
+                bits,
+                cycles,
+                cyclesPerDay,
+                rollsNeeded,
+                massaCost,
+                usdCost,
+                totalCost,
+                refund
+            };
+        }
+        
+        async function updateCalculation() {
+            const errorElement = document.getElementById('error');
+            const resultsElement = document.getElementById('results');
+            
+            errorElement.textContent = '';
+            resultsElement.innerHTML = '';
+            
+            try {
+                const megabits = parseFloat(document.getElementById('megabits').value);
+                const days = parseInt(document.getElementById('days').value);
+                const customPrice = parseFloat(document.getElementById('customPrice').value);
+                
+                console.log('Inputs:', { megabits, days, customPrice });
+                
+                if (isNaN(megabits) || isNaN(days)) {
+                    throw new Error('Please enter valid numbers for megabits and days.');
+                }
+                
+                if (!isNaN(customPrice)) {
+                    massaPrice = customPrice;
+                } else if (massaPrice === null) {
+                    console.log('Fetching Massa price...');
+                    massaPrice = await getMassaPrice();
+                    if (!massaPrice) {
+                        throw new Error('Failed to fetch Massa price. Please enter a custom price.');
+                    }
+                }
+                
+                console.log('Massa price:', massaPrice);
+                
+                const result = calculateStorage(megabits, days, massaPrice);
+                console.log('Calculation result:', result);
+                
+                const summaryHtml = `
+                    <div class="summary">
+                        <p>To store <strong>${megabits} megabits</strong> of data for <strong>${days} days</strong> on the Massa Network at the price <strong>$${massaPrice.toFixed(4)}</strong> per $MAS, the storage would cost <strong>$${result.totalCost.toFixed(2)}</strong> USD.</p>
+                        <p>The storage requires <strong>${result.rollsNeeded} rolls</strong> on the Massa Network. Each roll costs <strong>${ROLL_PRICE}</strong> $MAS and provides <strong>${ROLL_SPACE / (1024 * 1024)} MiB</strong> of storage space.</p>
+                        <p>There are <strong>${result.cyclesPerDay.toFixed(2)}</strong> cycles per day. <strong>${days}</strong> days represents <strong>${result.cycles}</strong> cycles.</p>
+                        <p>At the end of the <strong>${days}</strong> days, you will be reimbursed $${result.refund.toFixed(2)} assuming $MAS price is the same.</p>
+                    </div>
+                `;
+                
+                const tableHtml = `
+                    <table>
+                        <tr>
+                            <th>Metric</th>
+                            <th>Value</th>
+                        </tr>
+                        <tr>
+                            <td>Storage Size</td>
+                            <td>${megabits} megabits (${result.bits} bits)</td>
+                        </tr>
+                        <tr>
+                            <td>Duration</td>
+                            <td>${days} days (${result.cycles} cycles)</td>
+                        </tr>
+                        <tr>
+                            <td>Massa Price</td>
+                            <td>$${massaPrice.toFixed(4)} per $MAS</td>
+                        </tr>
+                        <tr>
+                            <td>Rolls Required</td>
+                            <td>${result.rollsNeeded}</td>
+                        </tr>
+                        <tr>
+                            <td>Cost per Cycle</td>
+                            <td>${result.massaCost.toFixed(4)} $MAS ($${result.usdCost.toFixed(4)} USD)</td>
+                        </tr>
+                        <tr>
+                            <td>Total Cost</td>
+                            <td>${(result.totalCost / massaPrice).toFixed(4)} $MAS ($${result.totalCost.toFixed(2)} USD)</td>
+                        </tr>
+                        <tr>
+                            <td>Refund Amount</td>
+                            <td>${(result.refund / massaPrice).toFixed(4)} $MAS ($${result.refund.toFixed(2)} USD)</td>
+                        </tr>
+                    </table>
+                `;
+                
+                resultsElement.innerHTML = summaryHtml + tableHtml;
+            } catch (error) {
+                console.error('Error in calculation:', error);
+                errorElement.textContent = error.message;
+            }
+        }
+        
+        function initializeCalculator() {
+            console.log('Initializing calculator');
+            const form = document.getElementById('storageForm');
+            const inputs = form.querySelectorAll('input');
+
+            inputs.forEach(input => {
+                input.addEventListener('input', updateCalculation);
+            });
+
+            // Initial calculation
+            updateCalculation();
+        }
+        
+        // Initialize the calculator when the DOM is fully loaded
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initializeCalculator);
+        } else {
+            initializeCalculator();
+        }
+    </script>
+</body>
+</html>
