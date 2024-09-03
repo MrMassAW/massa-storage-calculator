@@ -90,8 +90,8 @@
             $$\text{Cost}_{MAS} = 0.001 + 0.0001 * \text{BytecodeSize} + 0.0001 * \sum_{i} (4 + \text{DataStoreKeySize}_i + \text{DatastoreValueSize}_i)$$
         </p>
         <form id="storageForm">
-            <label for="megabits">Storage size (in megabits):</label>
-            <input type="number" id="megabits" required value="50">
+            <label for="megabytes">Storage size (in megabytes):</label>
+            <input type="number" id="megabytes" required value="50">
             
             <label for="days">Duration (in days):</label>
             <input type="number" id="days" required value="30">
@@ -124,8 +124,8 @@
             }
         }
         
-        function calculateStorage(megabits, days, massaPrice) {
-            const bits = megabits * 1000000;
+        function calculateStorage(megabytes, days, massaPrice) {
+            const bits = megabytes * 8 * 1000000;  // Convert megabytes to bits
             const cyclesPerDay = 24 * 3600 / (CYCLE_BLOCKS * SLOTS_PER_BLOCK * SLOT_DURATION);
             const cycles = Math.ceil(days * cyclesPerDay);
             
@@ -156,14 +156,14 @@
             resultsElement.innerHTML = '';
             
             try {
-                const megabits = parseFloat(document.getElementById('megabits').value);
+                const megabytes = parseFloat(document.getElementById('megabytes').value);
                 const days = parseInt(document.getElementById('days').value);
                 const customPrice = parseFloat(document.getElementById('customPrice').value);
                 
-                console.log('Inputs:', { megabits, days, customPrice });
+                console.log('Inputs:', { megabytes, days, customPrice });
                 
-                if (isNaN(megabits) || isNaN(days)) {
-                    throw new Error('Please enter valid numbers for megabits and days.');
+                if (isNaN(megabytes) || isNaN(days)) {
+                    throw new Error('Please enter valid numbers for megabytes and days.');
                 }
                 
                 if (!isNaN(customPrice)) {
@@ -178,12 +178,12 @@
                 
                 console.log('Massa price:', massaPrice);
                 
-                const result = calculateStorage(megabits, days, massaPrice);
+                const result = calculateStorage(megabytes, days, massaPrice);
                 console.log('Calculation result:', result);
                 
                 const summaryHtml = `
                     <div class="summary">
-                        <p>To store <strong>${megabits} megabits</strong> of data for <strong>${days} days</strong> on the Massa Network at the price <strong>$${massaPrice.toFixed(4)}</strong> per $MAS, the storage would cost <strong>$${result.totalCost.toFixed(2)}</strong> USD.</p>
+                        <p>To store <strong>${megabytes} megabytes</strong> of data for <strong>${days} days</strong> on the Massa Network at the price <strong>$${massaPrice.toFixed(4)}</strong> per $MAS, the storage would cost <strong>$${result.totalCost.toFixed(2)}</strong> USD.</p>
                         <p>The storage requires <strong>${result.rollsNeeded} rolls</strong> on the Massa Network. Each roll costs <strong>${ROLL_PRICE}</strong> $MAS and provides <strong>${ROLL_SPACE / (1024 * 1024)} MiB</strong> of storage space.</p>
                         <p>There are <strong>${result.cyclesPerDay.toFixed(2)}</strong> cycles per day. <strong>${days}</strong> days represents <strong>${result.cycles}</strong> cycles.</p>
                         <p>At the end of the <strong>${days}</strong> days, you will be reimbursed <strong>$${result.refund.toFixed(2)}</strong> assuming $MAS price is the same.</p>
@@ -198,7 +198,7 @@
                         </tr>
                         <tr>
                             <td>Storage Size</td>
-                            <td>${megabits} megabits (${result.bits} bits)</td>
+                            <td>${megabytes} megabytes (${result.bits} bits)</td>
                         </tr>
                         <tr>
                             <td>Duration</td>
