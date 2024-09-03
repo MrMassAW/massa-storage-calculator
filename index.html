@@ -7,25 +7,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Massa Network Storage Calculator</title>
     <style>
-        /* Updated Styles to Match the Theme */
         body {
             font-family: 'Roboto', sans-serif;
             margin: 0;
             padding: 0;
-            background-color: #f7d9d9; /* Light red background */
-            color: #333; /* Dark text color */
+            background-color: #f7d9d9;
+            color: #333;
         }
         .container {
             max-width: 800px;
             margin: 20px auto;
-            background-color: #f5b1b1; /* Light pink background for container */
+            background-color: #f5b1b1;
             padding: 30px;
             border-radius: 8px;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            border: 1px solid #d86c6c; /* Darker red border */
+            border: 1px solid #d86c6c;
         }
         h1 {
-            color: #aa2c2c; /* Dark red color for headings */
+            color: #aa2c2c;
             margin-bottom: 20px;
             text-align: center;
         }
@@ -33,16 +32,16 @@
             display: block;
             margin-top: 15px;
             font-weight: bold;
-            color: #aa2c2c; /* Dark red for labels */
+            color: #aa2c2c;
         }
-        input {
+        input, select {
             width: 100%;
             padding: 10px;
             margin-top: 5px;
-            border: 1px solid #aa2c2c; /* Red border for inputs */
+            border: 1px solid #aa2c2c;
             border-radius: 4px;
             font-size: 16px;
-            background-color: #f7d9d9; /* Matching input background */
+            background-color: #f7d9d9;
             color: #333;
         }
         #results {
@@ -54,7 +53,7 @@
             font-weight: bold;
         }
         .summary {
-            background-color: #f9caca; /* Slightly darker container for summaries */
+            background-color: #f9caca;
             padding: 15px;
             border-radius: 4px;
             margin-bottom: 20px;
@@ -62,7 +61,7 @@
             color: #333;
         }
         .summary strong {
-            color: #aa2c2c; /* Dark red for emphasis */
+            color: #aa2c2c;
         }
         table {
             width: 100%;
@@ -72,14 +71,14 @@
         th, td {
             padding: 12px;
             text-align: left;
-            border-bottom: 1px solid #d86c6c; /* Red border for table rows */
+            border-bottom: 1px solid #d86c6c;
         }
         th {
-            background-color: #aa2c2c; /* Dark red for table header */
+            background-color: #aa2c2c;
             color: white;
         }
         tr:nth-child(even) {
-            background-color: #f5b1b1; /* Light pink background for even rows */
+            background-color: #f5b1b1;
         }
     </style>
 </head>
@@ -88,14 +87,32 @@
         <h1>Massa Network Storage Calculator</h1>
         <p>
             <small>Please consider donate : AU12DA9nwpM3C2bk35mgEND7RNhDXMBhpGp54pucycvPmk3Pn4BBH</small>
-            $$\text{Cost}_{MAS} = 0.001 + 0.0001 * \text{BytecodeSize} + 0.0001 * \sum_{i} (4 + \text{DataStoreKeySize}_i + \text{DatastoreValueSize}_i)$$
         </p>
+        <div id="equation">
+            $$\text{Cost}_{MAS} = 0.001 + 0.0001 * \text{BytecodeSize} + 0.0001 * \sum_{i} (4 + \text{DataStoreKeySize}_i + \text{DatastoreValueSize}_i)$$
+        </div>
         <form id="storageForm">
-            <label for="megabytes">Storage size (in megabytes):</label>
-            <input type="number" id="megabytes" required value="50">
+            <label for="scenario">Select a pre-defined scenario:</label>
+            <select id="scenario">
+                <option value="custom">Custom Input</option>
+                <option value="largeFiles">Large Files Storage</option>
+                <option value="datingSite">Dating Site Profile</option>
+                <option value="blogPost">Blog Post with Images</option>
+                <option value="smallApp">Small Web Application</option>
+                <option value="iotData">IoT Sensor Data</option>
+            </select>
+
+            <label for="bytecodeSize">Bytecode Size (in bytes):</label>
+            <input type="number" id="bytecodeSize" required value="1000">
             
-            <label for="days">Duration (in days):</label>
-            <input type="number" id="days" required value="30">
+            <label for="dataStoreEntries">Number of DataStore Entries:</label>
+            <input type="number" id="dataStoreEntries" required value="10">
+            
+            <label for="avgKeySize">Average Key Size (in bytes):</label>
+            <input type="number" id="avgKeySize" required value="32">
+            
+            <label for="avgValueSize">Average Value Size (in bytes, max 1,024,000):</label>
+            <input type="number" id="avgValueSize" required value="64" max="1024000">
             
             <label for="customPrice">Custom Massa price (USD, optional):</label>
             <input type="number" id="customPrice" step="0.01" placeholder="Leave blank to use current market price">
@@ -106,13 +123,51 @@
     </div>
 
     <script>
-        const ROLL_PRICE = 0.1;  // price in Massa per roll
-        const ROLL_SPACE = 32 * 1024 * 1024;  // 32 MiB in bits
-        const CYCLE_BLOCKS = 128;  // blocks per cycle
-        const SLOTS_PER_BLOCK = 32;  // slots per block
-        const SLOT_DURATION = 0.5;  // seconds
-        
         let massaPrice = null;
+        const MAX_VALUE_SIZE = 1024000; // 1 MB in bytes
+
+        const scenarios = {
+            largeFiles: {
+                name: "Large Files Storage",
+                description: "Storage for multiple large files, each up to 1MB",
+                bytecodeSize: 1000,
+                dataStoreEntries: 50,
+                avgKeySize: 32,
+                avgValueSize: 1024000 // 1MB, the maximum allowed
+            },
+            datingSite: {
+                name: "Dating Site Profile",
+                description: "Profile with multiple fields and 5 profile pictures (up to 1MB each)",
+                bytecodeSize: 5000,
+                dataStoreEntries: 20,
+                avgKeySize: 16,
+                avgValueSize: 512000 // Average of text fields and images up to 1MB
+            },
+            blogPost: {
+                name: "Blog Post with Images",
+                description: "A blog post with text content and 3 images (up to 1MB each)",
+                bytecodeSize: 2000,
+                dataStoreEntries: 4,
+                avgKeySize: 24,
+                avgValueSize: 768000 // Average of text content and images up to 1MB
+            },
+            smallApp: {
+                name: "Small Web Application",
+                description: "A small web app with HTML, CSS, and JavaScript files",
+                bytecodeSize: 50000,
+                dataStoreEntries: 10,
+                avgKeySize: 32,
+                avgValueSize: 102400 // Average size of small web files
+            },
+            iotData: {
+                name: "IoT Sensor Data",
+                description: "1000 entries of sensor data from IoT devices",
+                bytecodeSize: 500,
+                dataStoreEntries: 1000,
+                avgKeySize: 16,
+                avgValueSize: 64 // Small data entries for sensor readings
+            }
+        };
         
         async function getMassaPrice() {
             try {
@@ -125,30 +180,32 @@
             }
         }
         
-        function calculateStorage(megabytes, days, massaPrice) {
-            const bits = megabytes * 8 * 1000000;  // Convert megabytes to bits
-            const cyclesPerDay = 24 * 3600 / (CYCLE_BLOCKS * SLOTS_PER_BLOCK * SLOT_DURATION);
-            const cycles = Math.ceil(days * cyclesPerDay);
+        function calculateStorage(bytecodeSize, dataStoreEntries, avgKeySize, avgValueSize) {
+            const baseCost = 0.001;
+            const bytecodeCost = 0.0001 * bytecodeSize;
+            const dataStoreCost = 0.0001 * dataStoreEntries * (4 + avgKeySize + avgValueSize);
             
-            const rollsNeeded = Math.ceil(bits / ROLL_SPACE);
-            const massaCost = rollsNeeded * ROLL_PRICE;
-            const usdCost = massaCost * massaPrice;
-            
-            const totalCost = usdCost * cycles;
-            const refund = totalCost * ((cycles - 1) / cycles);
+            const totalCostMAS = baseCost + bytecodeCost + dataStoreCost;
             
             return {
-                bits,
-                cycles,
-                cyclesPerDay,
-                rollsNeeded,
-                massaCost,
-                usdCost,
-                totalCost,
-                refund
+                bytecodeSize,
+                dataStoreEntries,
+                avgKeySize,
+                avgValueSize,
+                totalCostMAS
             };
         }
         
+        function updateInputs(scenario) {
+            if (scenario === 'custom') return;
+
+            const data = scenarios[scenario];
+            document.getElementById('bytecodeSize').value = data.bytecodeSize;
+            document.getElementById('dataStoreEntries').value = data.dataStoreEntries;
+            document.getElementById('avgKeySize').value = data.avgKeySize;
+            document.getElementById('avgValueSize').value = data.avgValueSize;
+        }
+
         async function updateCalculation() {
             const errorElement = document.getElementById('error');
             const resultsElement = document.getElementById('results');
@@ -157,14 +214,21 @@
             resultsElement.innerHTML = '';
             
             try {
-                const megabytes = parseFloat(document.getElementById('megabytes').value);
-                const days = parseInt(document.getElementById('days').value);
+                const scenario = document.getElementById('scenario').value;
+                const bytecodeSize = parseInt(document.getElementById('bytecodeSize').value);
+                const dataStoreEntries = parseInt(document.getElementById('dataStoreEntries').value);
+                const avgKeySize = parseInt(document.getElementById('avgKeySize').value);
+                const avgValueSize = parseInt(document.getElementById('avgValueSize').value);
                 const customPrice = parseFloat(document.getElementById('customPrice').value);
                 
-                console.log('Inputs:', { megabytes, days, customPrice });
+                console.log('Inputs:', { scenario, bytecodeSize, dataStoreEntries, avgKeySize, avgValueSize, customPrice });
                 
-                if (isNaN(megabytes) || isNaN(days)) {
-                    throw new Error('Please enter valid numbers for megabytes and days.');
+                if ([bytecodeSize, dataStoreEntries, avgKeySize, avgValueSize].some(isNaN)) {
+                    throw new Error('Please enter valid numbers for all fields.');
+                }
+
+                if (avgValueSize > MAX_VALUE_SIZE) {
+                    throw new Error(`Average Value Size cannot exceed ${MAX_VALUE_SIZE} bytes (1 MB).`);
                 }
                 
                 if (!isNaN(customPrice)) {
@@ -179,15 +243,20 @@
                 
                 console.log('Massa price:', massaPrice);
                 
-                const result = calculateStorage(megabytes, days, massaPrice);
+                const result = calculateStorage(bytecodeSize, dataStoreEntries, avgKeySize, avgValueSize);
                 console.log('Calculation result:', result);
+                
+                const usdCost = result.totalCostMAS * massaPrice;
+                
+                let scenarioDescription = '';
+                if (scenario !== 'custom') {
+                    scenarioDescription = `<p><strong>Scenario:</strong> ${scenarios[scenario].name} - ${scenarios[scenario].description}</p>`;
+                }
                 
                 const summaryHtml = `
                     <div class="summary">
-                        <p>To store <strong>${megabytes} megabytes</strong> of data for <strong>${days} days</strong> on the Massa Network at the price <strong>$${massaPrice.toFixed(4)}</strong> per $MAS, the storage would cost <strong>$${result.totalCost.toFixed(2)}</strong> USD.</p>
-                        <p>The storage requires <strong>${result.rollsNeeded} rolls</strong> on the Massa Network. Each roll costs <strong>${ROLL_PRICE}</strong> $MAS and provides <strong>${ROLL_SPACE / (1024 * 1024)} MiB</strong> of storage space.</p>
-                        <p>There are <strong>${result.cyclesPerDay.toFixed(2)}</strong> cycles per day. <strong>${days}</strong> days represents <strong>${result.cycles}</strong> cycles.</p>
-                        <p>At the end of the <strong>${days}</strong> days, you will be reimbursed <strong>$${result.refund.toFixed(2)}</strong> assuming $MAS price is the same.</p>
+                        ${scenarioDescription}
+                        <p>Based on the provided inputs, the storage cost on the Massa Network would be <strong>${result.totalCostMAS.toFixed(6)} $MAS</strong> or <strong>$${usdCost.toFixed(6)} USD</strong> at the current price of <strong>$${massaPrice.toFixed(4)}</strong> per $MAS.</p>
                     </div>
                 `;
                 
@@ -198,32 +267,28 @@
                             <th>Value</th>
                         </tr>
                         <tr>
-                            <td>Storage Size</td>
-                            <td>${megabytes} megabytes (${result.bits} bits)</td>
+                            <td>Bytecode Size</td>
+                            <td>${result.bytecodeSize} bytes</td>
                         </tr>
                         <tr>
-                            <td>Duration</td>
-                            <td>${days} days (${result.cycles} cycles)</td>
+                            <td>DataStore Entries</td>
+                            <td>${result.dataStoreEntries}</td>
                         </tr>
                         <tr>
-                            <td>Massa Price</td>
-                            <td>$${massaPrice.toFixed(4)} per $MAS</td>
+                            <td>Average Key Size</td>
+                            <td>${result.avgKeySize} bytes</td>
                         </tr>
                         <tr>
-                            <td>Rolls Required</td>
-                            <td>${result.rollsNeeded}</td>
+                            <td>Average Value Size</td>
+                            <td>${result.avgValueSize} bytes</td>
                         </tr>
                         <tr>
-                            <td>Cost per Cycle</td>
-                            <td>${result.massaCost.toFixed(4)} $MAS ($${result.usdCost.toFixed(4)} USD)</td>
+                            <td>Total Cost in $MAS</td>
+                            <td>${result.totalCostMAS.toFixed(6)} $MAS</td>
                         </tr>
                         <tr>
-                            <td>Total Cost</td>
-                            <td>${(result.totalCost / massaPrice).toFixed(4)} $MAS ($${result.totalCost.toFixed(2)} USD)</td>
-                        </tr>
-                        <tr>
-                            <td>Refund Amount</td>
-                            <td>${(result.refund / massaPrice).toFixed(4)} $MAS ($${result.refund.toFixed(2)} USD)</td>
+                            <td>Total Cost in USD</td>
+                            <td>$${usdCost.toFixed(6)} USD</td>
                         </tr>
                     </table>
                 `;
@@ -239,9 +304,15 @@
             console.log('Initializing calculator');
             const form = document.getElementById('storageForm');
             const inputs = form.querySelectorAll('input');
+            const scenarioSelect = document.getElementById('scenario');
 
             inputs.forEach(input => {
                 input.addEventListener('input', updateCalculation);
+            });
+
+            scenarioSelect.addEventListener('change', (event) => {
+                updateInputs(event.target.value);
+                updateCalculation();
             });
 
             // Initial calculation
