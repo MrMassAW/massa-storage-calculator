@@ -1,42 +1,49 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Massa Network Storage Calculator</title>
     <style>
+        /* Updated Styles to Match the Theme */
         body {
-            font-family: Arial, sans-serif;
-            line-height: 1.6;
+            font-family: 'Roboto', sans-serif;
             margin: 0;
-            padding: 20px;
-            background-color: #f4f4f4;
-            color: #333;
+            padding: 0;
+            background-color: #f7d9d9; /* Light red background */
+            color: #333; /* Dark text color */
         }
         .container {
             max-width: 800px;
-            margin: 0 auto;
-            background-color: #fff;
+            margin: 20px auto;
+            background-color: #f5b1b1; /* Light pink background for container */
             padding: 30px;
             border-radius: 8px;
-            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            border: 1px solid #d86c6c; /* Darker red border */
         }
         h1 {
-            color: #2c3e50;
+            color: #aa2c2c; /* Dark red color for headings */
             margin-bottom: 20px;
+            text-align: center;
         }
         label {
             display: block;
             margin-top: 15px;
             font-weight: bold;
+            color: #aa2c2c; /* Dark red for labels */
         }
         input {
             width: 100%;
             padding: 10px;
             margin-top: 5px;
-            border: 1px solid #ddd;
+            border: 1px solid #aa2c2c; /* Red border for inputs */
             border-radius: 4px;
             font-size: 16px;
+            background-color: #f7d9d9; /* Matching input background */
+            color: #333;
         }
         #results {
             margin-top: 30px;
@@ -47,14 +54,15 @@
             font-weight: bold;
         }
         .summary {
-            background-color: #f8f9fa;
+            background-color: #f9caca; /* Slightly darker container for summaries */
             padding: 15px;
             border-radius: 4px;
             margin-bottom: 20px;
             line-height: 1.8;
+            color: #333;
         }
         .summary strong {
-            color: #2c3e50;
+            color: #aa2c2c; /* Dark red for emphasis */
         }
         table {
             width: 100%;
@@ -64,29 +72,32 @@
         th, td {
             padding: 12px;
             text-align: left;
-            border-bottom: 1px solid #ddd;
+            border-bottom: 1px solid #d86c6c; /* Red border for table rows */
         }
         th {
-            background-color: #2c3e50;
+            background-color: #aa2c2c; /* Dark red for table header */
             color: white;
         }
         tr:nth-child(even) {
-            background-color: #f8f9fa;
+            background-color: #f5b1b1; /* Light pink background for even rows */
         }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>Massa Network Storage Calculator</h1>
+        <p>
+            $$\text{Cost}_{MAS} = 0.001 + 0.0001 * \text{BytecodeSize} + 0.0001 * \sum_{i} (4 + \text{DataStoreKeySize}_i + \text{DatastoreValueSize}_i)$$
+        </p>
         <form id="storageForm">
             <label for="megabits">Storage size (in megabits):</label>
-            <input type="number" id="megabits" required value="1000">
+            <input type="number" id="megabits" required value="50">
             
             <label for="days">Duration (in days):</label>
             <input type="number" id="days" required value="30">
             
             <label for="customPrice">Custom Massa price (USD, optional):</label>
-            <input type="number" id="customPrice" step="0.0001" placeholder="Leave blank to use current market price">
+            <input type="number" id="customPrice" step="0.01" placeholder="Leave blank to use current market price">
         </form>
         
         <div id="error"></div>
@@ -175,7 +186,7 @@
                         <p>To store <strong>${megabits} megabits</strong> of data for <strong>${days} days</strong> on the Massa Network at the price <strong>$${massaPrice.toFixed(4)}</strong> per $MAS, the storage would cost <strong>$${result.totalCost.toFixed(2)}</strong> USD.</p>
                         <p>The storage requires <strong>${result.rollsNeeded} rolls</strong> on the Massa Network. Each roll costs <strong>${ROLL_PRICE}</strong> $MAS and provides <strong>${ROLL_SPACE / (1024 * 1024)} MiB</strong> of storage space.</p>
                         <p>There are <strong>${result.cyclesPerDay.toFixed(2)}</strong> cycles per day. <strong>${days}</strong> days represents <strong>${result.cycles}</strong> cycles.</p>
-                        <p>At the end of the <strong>${days}</strong> days, you will be reimbursed $${result.refund.toFixed(2)} assuming $MAS price is the same.</p>
+                        <p>At the end of the <strong>${days}</strong> days, you will be reimbursed <strong>$${result.refund.toFixed(2)}</strong> assuming $MAS price is the same.</p>
                     </div>
                 `;
                 
