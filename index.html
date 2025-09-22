@@ -1,330 +1,82 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Massa Network Storage Calculator</title>
-    <style>
-        body {
-            font-family: 'Roboto', sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f7d9d9;
-            color: #333;
-        }
-        .container {
-            max-width: 800px;
-            margin: 20px auto;
-            background-color: #f5b1b1;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            border: 1px solid #d86c6c;
-        }
-        h1 {
-            color: #aa2c2c;
-            margin-bottom: 20px;
-            text-align: center;
-        }
-        label {
-            display: block;
-            margin-top: 15px;
-            font-weight: bold;
-            color: #aa2c2c;
-        }
-        input, select {
-            width: 100%;
-            padding: 10px;
-            margin-top: 5px;
-            border: 1px solid #aa2c2c;
-            border-radius: 4px;
-            font-size: 16px;
-            background-color: #f7d9d9;
-            color: #333;
-        }
-        #results {
-            margin-top: 30px;
-        }
-        #error {
-            color: #e74c3c;
-            margin-top: 15px;
-            font-weight: bold;
-        }
-        .summary {
-            background-color: #f9caca;
-            padding: 15px;
-            border-radius: 4px;
-            margin-bottom: 20px;
-            line-height: 1.8;
-            color: #333;
-        }
-        .summary strong {
-            color: #aa2c2c;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-        th, td {
-            padding: 12px;
-            text-align: left;
-            border-bottom: 1px solid #d86c6c;
-        }
-        th {
-            background-color: #aa2c2c;
-            color: white;
-        }
-        tr:nth-child(even) {
-            background-color: #f5b1b1;
-        }
-    </style>
+    <title>Massa Storage & Refund Calculator</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&family=Roboto+Mono&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="container">
-        <h1>Massa Network Storage Calculator</h1>
-        <p>
-            <small>Please consider donate : AU12DA9nwpM3C2bk35mgEND7RNhDXMBhpGp54pucycvPmk3Pn4BBH</small>
-        </p>
-        <div id="equation">
-            $$\text{Cost}_{MAS} = 0.001 + 0.0001 * \text{BytecodeSize} + 0.0001 * \sum_{i} (4 + \text{DataStoreKeySize}_i + \text{DatastoreValueSize}_i)$$
-        </div>
-        <form id="storageForm">
-            <label for="scenario">Select a pre-defined scenario:</label>
-            <select id="scenario">
-                <option value="custom">Custom Input</option>
-                <option value="largeFiles">Large Files Storage</option>
-                <option value="datingSite">Dating Site Profile</option>
-                <option value="blogPost">Blog Post with Images</option>
-                <option value="smallApp">Small Web Application</option>
-                <option value="iotData">IoT Sensor Data</option>
-            </select>
 
-            <label for="bytecodeSize">Bytecode Size (in bytes):</label>
-            <input type="number" id="bytecodeSize" required value="1000">
-            
-            <label for="dataStoreEntries">Number of DataStore Entries:</label>
-            <input type="number" id="dataStoreEntries" required value="10">
-            
-            <label for="avgKeySize">Average Key Size (in bytes):</label>
-            <input type="number" id="avgKeySize" required value="32">
-            
-            <label for="avgValueSize">Average Value Size (in bytes, max 1,024,000):</label>
-            <input type="number" id="avgValueSize" required value="64" max="1024000">
-            
-            <label for="customPrice">Custom Massa price (USD, optional):</label>
-            <input type="number" id="customPrice" step="0.01" placeholder="Leave blank to use current market price">
-        </form>
-        
-        <div id="error"></div>
-        <div id="results"></div>
+<div class="main-layout">
+    <div class="logo-area">
+        <img src="path/to/massa_logo.png" alt="Massa Logo" class="massa-logo">
     </div>
 
-    <script>
-        let massaPrice = null;
-        const MAX_VALUE_SIZE = 1024000; // 1 MB in bytes
+    <nav class="menu">
+        <h3>Examples (Cheapest to Most Expensive)</h3>
+        <ul id="examplesMenu">
+            <li data-files="50" data-size="100" data-bytecode="10">🏢 Business Profile Site</li>
+            <li data-files="2500" data-size="200" data-bytecode="50">✍️ Personal Blog</li>
+            <li data-files="5000" data-size="5120" data-bytecode="200">🛍️ Shopify-like Store</li>
+            <li data-files="50000" data-size="5120" data-bytecode="150">📚 Wikipedia-like Site</li>
+            <li data-files="1000000" data-size="10240" data-bytecode="250">📂 Code Repository</li>
+            <li data-files="5000" data-size="15360" data-bytecode="30">📖 E-book Library</li>
+            <li data-files="2000" data-size="20480" data-bytecode="40">🖼️ High-Res Photo Gallery</li>
+            <li data-files="5000" data-size="25600" data-bytecode="300">🎮 Simple Game Assets</li>
+            <li data-files="10000" data-size="40960" data-bytecode="400">🤳 Social Media Feed</li>
+            <li data-files="100000" data-size="51200" data-bytecode="500">❤️ Dating-like Site</li>
+            <li data-files="500000" data-size="61440" data-bytecode="350">🗣️ Online Forum</li>
+            <li data-files="10000" data-size="81920" data-bytecode="200">🎵 Music Streaming Service</li>
+            <li data-files="100000" data-size="102400" data-bytecode="600">💎 NFT Marketplace</li>
+            <li data-files="100" data-size="512000" data-bytecode="400">🎬 Decentralized Streaming</li>
+            <li data-files="100" data-size="1024000" data-bytecode="100">🔬 Scientific Data Archive</li>
+        </ul>
+    </nav>
 
-        const scenarios = {
-            largeFiles: {
-                name: "Large Files Storage",
-                description: "Storage for multiple large files, each up to 1MB",
-                bytecodeSize: 1000,
-                dataStoreEntries: 50,
-                avgKeySize: 32,
-                avgValueSize: 1024000 // 1MB, the maximum allowed
-            },
-            datingSite: {
-                name: "Dating Site Profile",
-                description: "Profile with multiple fields and 5 profile pictures (up to 1MB each)",
-                bytecodeSize: 5000,
-                dataStoreEntries: 20,
-                avgKeySize: 16,
-                avgValueSize: 512000 // Average of text fields and images up to 1MB
-            },
-            blogPost: {
-                name: "Blog Post with Images",
-                description: "A blog post with text content and 3 images (up to 1MB each)",
-                bytecodeSize: 2000,
-                dataStoreEntries: 4,
-                avgKeySize: 24,
-                avgValueSize: 768000 // Average of text content and images up to 1MB
-            },
-            smallApp: {
-                name: "Small Web Application",
-                description: "A small web app with HTML, CSS, and JavaScript files",
-                bytecodeSize: 50000,
-                dataStoreEntries: 10,
-                avgKeySize: 32,
-                avgValueSize: 102400 // Average size of small web files
-            },
-            iotData: {
-                name: "IoT Sensor Data",
-                description: "1000 entries of sensor data from IoT devices",
-                bytecodeSize: 500,
-                dataStoreEntries: 1000,
-                avgKeySize: 16,
-                avgValueSize: 64 // Small data entries for sensor readings
-            }
-        };
-        
-        async function getMassaPrice() {
-            try {
-                const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=massa&vs_currencies=usd');
-                const data = await response.json();
-                return data.massa.usd;
-            } catch (error) {
-                console.error('Error fetching Massa price:', error);
-                return null;
-            }
-        }
-        
-        function calculateStorage(bytecodeSize, dataStoreEntries, avgKeySize, avgValueSize) {
-            const baseCost = 0.001;
-            const bytecodeCost = 0.0001 * bytecodeSize;
-            const dataStoreCost = 0.0001 * dataStoreEntries * (4 + avgKeySize + avgValueSize);
+    <div class="calculator-container">
+        <div class="calculator">
+            <h2>Massa Storage & Refund Calculator</h2>
+            <p class="tagline">Calculate your one-time storage cost and potential refund on the Massa blockchain.</p>
+
+            <label for="numFiles">Number of Data Entries (Files):</label>
+            <input type="number" id="numFiles" placeholder="e.g., 2500">
+
+            <label for="totalSize">Total Data Size (in MB):</label>
+            <input type="number" id="totalSize" placeholder="e.g., 200">
             
-            const totalCostMAS = baseCost + bytecodeCost + dataStoreCost;
-            
-            return {
-                bytecodeSize,
-                dataStoreEntries,
-                avgKeySize,
-                avgValueSize,
-                totalCostMAS
-            };
-        }
+            <input type="hidden" id="bytecodeSize" value="100">
+
+            <button id="calculateBtn">Calculate Cost</button>
+
+            <div id="result">Select an example or enter custom values.</div>
+            <p class="disclaimer">Estimates based on an avg. key size of 64 bytes.</p>
+        </div>
+    </div>
+
+    <aside class="explanation-panel">
+        <h3>Calculation Breakdown</h3>
+        <p>Follow the steps below to see how your total cost is derived from the official formula.</p>
         
-        function updateInputs(scenario) {
-            if (scenario === 'custom') return;
-
-            const data = scenarios[scenario];
-            document.getElementById('bytecodeSize').value = data.bytecodeSize;
-            document.getElementById('dataStoreEntries').value = data.dataStoreEntries;
-            document.getElementById('avgKeySize').value = data.avgKeySize;
-            document.getElementById('avgValueSize').value = data.avgValueSize;
-        }
-
-        async function updateCalculation() {
-            const errorElement = document.getElementById('error');
-            const resultsElement = document.getElementById('results');
-            
-            errorElement.textContent = '';
-            resultsElement.innerHTML = '';
-            
-            try {
-                const scenario = document.getElementById('scenario').value;
-                const bytecodeSize = parseInt(document.getElementById('bytecodeSize').value);
-                const dataStoreEntries = parseInt(document.getElementById('dataStoreEntries').value);
-                const avgKeySize = parseInt(document.getElementById('avgKeySize').value);
-                const avgValueSize = parseInt(document.getElementById('avgValueSize').value);
-                const customPrice = parseFloat(document.getElementById('customPrice').value);
-                
-                console.log('Inputs:', { scenario, bytecodeSize, dataStoreEntries, avgKeySize, avgValueSize, customPrice });
-                
-                if ([bytecodeSize, dataStoreEntries, avgKeySize, avgValueSize].some(isNaN)) {
-                    throw new Error('Please enter valid numbers for all fields.');
-                }
-
-                if (avgValueSize > MAX_VALUE_SIZE) {
-                    throw new Error(`Average Value Size cannot exceed ${MAX_VALUE_SIZE} bytes (1 MB).`);
-                }
-                
-                if (!isNaN(customPrice)) {
-                    massaPrice = customPrice;
-                } else if (massaPrice === null) {
-                    console.log('Fetching Massa price...');
-                    massaPrice = await getMassaPrice();
-                    if (!massaPrice) {
-                        throw new Error('Failed to fetch Massa price. Please enter a custom price.');
-                    }
-                }
-                
-                console.log('Massa price:', massaPrice);
-                
-                const result = calculateStorage(bytecodeSize, dataStoreEntries, avgKeySize, avgValueSize);
-                console.log('Calculation result:', result);
-                
-                const usdCost = result.totalCostMAS * massaPrice;
-                
-                let scenarioDescription = '';
-                if (scenario !== 'custom') {
-                    scenarioDescription = `<p><strong>Scenario:</strong> ${scenarios[scenario].name} - ${scenarios[scenario].description}</p>`;
-                }
-                
-                const summaryHtml = `
-                    <div class="summary">
-                        ${scenarioDescription}
-                        <p>Based on the provided inputs, the storage cost on the Massa Network would be <strong>${result.totalCostMAS.toFixed(6)} $MAS</strong> or <strong>$${usdCost.toFixed(6)} USD</strong> at the current price of <strong>$${massaPrice.toFixed(4)}</strong> per $MAS.</p>
-                    </div>
-                `;
-                
-                const tableHtml = `
-                    <table>
-                        <tr>
-                            <th>Metric</th>
-                            <th>Value</th>
-                        </tr>
-                        <tr>
-                            <td>Bytecode Size</td>
-                            <td>${result.bytecodeSize} bytes</td>
-                        </tr>
-                        <tr>
-                            <td>DataStore Entries</td>
-                            <td>${result.dataStoreEntries}</td>
-                        </tr>
-                        <tr>
-                            <td>Average Key Size</td>
-                            <td>${result.avgKeySize} bytes</td>
-                        </tr>
-                        <tr>
-                            <td>Average Value Size</td>
-                            <td>${result.avgValueSize} bytes</td>
-                        </tr>
-                        <tr>
-                            <td>Total Cost in $MAS</td>
-                            <td>${result.totalCostMAS.toFixed(6)} $MAS</td>
-                        </tr>
-                        <tr>
-                            <td>Total Cost in USD</td>
-                            <td>$${usdCost.toFixed(6)} USD</td>
-                        </tr>
-                    </table>
-                `;
-                
-                resultsElement.innerHTML = summaryHtml + tableHtml;
-            } catch (error) {
-                console.error('Error in calculation:', error);
-                errorElement.textContent = error.message;
-            }
-        }
+        <div id="calculationBreakdown">
+            <div class="step-placeholder">
+                <p>Enter values in the calculator to see the step-by-step resolution here.</p>
+            </div>
+        </div>
         
-        function initializeCalculator() {
-            console.log('Initializing calculator');
-            const form = document.getElementById('storageForm');
-            const inputs = form.querySelectorAll('input');
-            const scenarioSelect = document.getElementById('scenario');
-
-            inputs.forEach(input => {
-                input.addEventListener('input', updateCalculation);
-            });
-
-            scenarioSelect.addEventListener('change', (event) => {
-                updateInputs(event.target.value);
-                updateCalculation();
-            });
-
-            // Initial calculation
-            updateCalculation();
-        }
+        <hr>
         
-        // Initialize the calculator when the DOM is fully loaded
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', initializeCalculator);
-        } else {
-            initializeCalculator();
-        }
-    </script>
+        <h4>Calculator Assumptions</h4>
+        <div class="assumption-box">
+            To simplify, we assume the average size of a data "key" (like a filename or ID) is <strong>64 bytes</strong>.
+        </div>
+    </aside>
+
+</div>
+
+<script src="script.js" defer></script>
 </body>
 </html>
