@@ -5,8 +5,6 @@
     --massa-text-secondary: #a0a0a0;
     --massa-card-bg: #1a1a1f;
     --massa-border-color: #333333;
-    --postit-yellow: #fffacd;
-    --postit-text: #3d3d3d;
 }
 
 body {
@@ -17,91 +15,49 @@ body {
     -webkit-font-smoothing: antialiased;
 }
 
-.main-layout {
-    display: flex;
-    height: 100vh;
+.app-container {
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 20px;
 }
 
-/* Logo Area */
 .logo-area {
-    position: absolute;
-    top: 20px;
-    left: 20px;
-    z-index: 10;
+    text-align: center;
+    padding: 20px 0;
 }
 .massa-logo {
-    height: 35px;
+    height: 40px;
     width: auto;
 }
 
-/* Left and Right Panels */
-.menu, .explanation-panel {
-    overflow-y: auto;
-    flex-shrink: 0;
-}
-.menu {
-    width: 320px;
-    background-color: var(--massa-card-bg);
-    padding: 20px;
-    border-right: 1px solid var(--massa-border-color);
-    padding-top: 80px;
-}
-.explanation-panel {
-    width: 420px;
-    background-color: var(--postit-yellow);
-    color: var(--postit-text);
-    padding: 25px;
-    border-left: 1px solid var(--massa-border-color);
-}
-.menu h3, .explanation-panel h3 {
-    margin-top: 0;
-    border-bottom: 2px solid var(--massa-blue);
-    padding-bottom: 10px;
-    font-weight: 600;
-}
-.menu ul { list-style: none; padding: 0; margin: 0; }
-.menu li {
-    padding: 12px 10px;
-    cursor: pointer;
-    border-radius: 6px;
-    margin-bottom: 5px;
-    transition: background-color 0.2s, color 0.2s;
-    color: var(--massa-text-secondary);
-}
-.menu li:hover { color: var(--massa-text-primary); }
-.menu li.active {
-    background-color: var(--massa-blue);
-    color: var(--massa-text-primary);
+/* Sections Styling */
+.calculator, .result-section, .details-section {
+    background: var(--massa-card-bg);
+    border: 1px solid var(--massa-border-color);
+    border-radius: 8px;
+    padding: 2.5em;
+    margin-bottom: 30px;
 }
 
-/* Center Panel (Calculator) */
-.calculator-container {
-    flex-grow: 1;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 2em;
-    min-width: 450px;
-}
-.calculator {
-    background: var(--massa-card-bg);
-    padding: 2.5em;
-    border-radius: 8px;
-    width: 100%;
-    max-width: 450px;
-    border: 1px solid var(--massa-border-color);
-}
 .calculator h2 { text-align: center; margin-top: 0; color: var(--massa-text-primary); }
 .calculator .tagline { text-align: center; margin-bottom: 25px; color: var(--massa-text-secondary); }
-.calculator label { display: block; text-align: left; margin-top: 15px; font-weight: 600; font-size: 0.9em; }
+.calculator label { display: block; text-align: left; margin-top: 20px; font-weight: 600; font-size: 0.9em; }
 
-/* Input & Button Styles */
-input { 
-    width: 100%; box-sizing: border-box; padding: 10px; margin-top: 8px; 
+/* Input, Select & Button Styles */
+input, select { 
+    width: 100%; box-sizing: border-box; padding: 12px; margin-top: 8px; 
     border-radius: 4px; border: 1px solid var(--massa-border-color);
     background-color: var(--massa-dark-bg);
     color: var(--massa-text-primary);
     font-size: 1em;
+    font-family: 'Poppins', sans-serif;
+}
+select {
+    appearance: none;
+    background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23a0a0a0%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E');
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+    background-size: .65em auto;
 }
 button { 
     background-color: var(--massa-blue); color: white; padding: 12px 20px; 
@@ -112,16 +68,12 @@ button {
 button:hover { transform: scale(1.02); }
 
 /* Result Box Styles */
-#result { 
-    margin-top: 25px; font-size: 1em; text-align: left; 
-    background-color: var(--massa-dark-bg); padding: 15px; border-radius: 6px; 
-}
-#result p { margin: 10px 0; display: flex; justify-content: space-between; }
-#result .info-box { 
+.result-section p { margin: 10px 0; display: flex; justify-content: space-between; }
+.result-section .info-box { 
     background-color: rgba(0, 0, 255, 0.1); border-left: 4px solid var(--massa-blue); 
     padding: 10px; margin: 15px 0 20px 0; font-size: 0.9em; 
 }
-#result .total { border-top: 1px solid var(--massa-border-color); padding-top: 10px; font-size: 1.15em; font-weight: 600; }
+.result-section .total { border-top: 1px solid var(--massa-border-color); padding-top: 10px; font-size: 1.15em; font-weight: 600; }
 .refund-section { margin-top: 20px; padding-top: 15px; border-top: 2px dashed var(--massa-border-color); }
 .refund-section h4 { margin-top: 0; color: #28a745; }
 .refund-section .highlight { 
@@ -129,29 +81,31 @@ button:hover { transform: scale(1.02); }
 }
 .disclaimer { font-size: 0.8em; color: var(--massa-text-secondary); margin-top: 15px; text-align: center; }
 
-/* Explanation Panel & Breakdown Styles */
-.explanation-panel h4 { margin-top: 25px; margin-bottom: 10px; }
-.explanation-panel ul { padding-left: 20px; }
-.explanation-panel li { margin-bottom: 8px; }
-.explanation-panel hr { border: none; border-top: 1px solid rgba(0,0,0,0.1); margin: 25px 0; }
-.explanation-panel .assumption-box {
-    background-color: rgba(255, 228, 181, 0.5);
-    border: 1px solid #fce89e;
-    color: var(--postit-text);
-    padding: 10px;
+/* Breakdown & Details Styles */
+.details-section h3, .details-section h4 {
+    margin-top: 0;
+    border-bottom: 2px solid var(--massa-blue);
+    padding-bottom: 10px;
+    font-weight: 600;
+}
+.details-section hr { border: none; border-top: 1px solid var(--massa-border-color); margin: 25px 0; }
+.details-section .assumption-box {
+    background-color: rgba(0, 0, 255, 0.1);
+    border: 1px solid var(--massa-blue);
+    padding: 15px;
     border-radius: 4px;
     font-size: 0.9em;
 }
 
 #calculationBreakdown .step {
-    background-color: rgba(255, 255, 255, 0.5);
-    border: 1px solid rgba(0,0,0,0.1);
+    background-color: var(--massa-dark-bg);
+    border: 1px solid var(--massa-border-color);
     border-radius: 6px;
     padding: 15px;
     margin-bottom: 15px;
 }
-#calculationBreakdown h5 { margin-top: 0; margin-bottom: 10px; font-size: 1.1em; color: var(--postit-text); }
-#calculationBreakdown p { font-family: 'Roboto Mono', monospace; font-size: 0.9em; line-height: 1.6; margin: 5px 0; }
+#calculationBreakdown h5 { margin-top: 0; margin-bottom: 10px; font-size: 1.1em; color: var(--massa-text-primary); }
+#calculationBreakdown p { font-family: 'Roboto Mono', monospace; font-size: 0.9em; line-height: 1.6; margin: 5px 0; word-break: break-all; }
 #calculationBreakdown .value { color: var(--massa-blue); font-weight: 600; }
 #calculationBreakdown .final-cost {
     display: block; margin-top: 10px; padding: 8px;
@@ -160,50 +114,6 @@ button:hover { transform: scale(1.02); }
 }
 .step-placeholder {
     text-align: center; padding: 40px 20px;
-    background-color: rgba(0,0,0,0.02); border: 1px dashed rgba(0,0,0,0.1);
-    border-radius: 6px; color: #888;
-}
-
-
-/* --- MOBILE RESPONSIVE STYLES --- */
-@media (max-width: 800px) {
-    .main-layout {
-        flex-direction: column; /* Stack panels vertically */
-        height: auto; /* Allow content to scroll */
-    }
-
-    .logo-area {
-        position: relative; /* Make logo part of the normal flow */
-        top: 0;
-        left: 0;
-        padding: 15px;
-        background-color: var(--massa-card-bg);
-    }
-    .massa-logo {
-        height: 30px;
-    }
-
-    /* Re-order panels for mobile */
-    .calculator-container { order: 1; }
-    .menu { order: 2; }
-    .explanation-panel { order: 3; }
-    
-    /* Resize panels to full width */
-    .menu, .explanation-panel, .calculator-container {
-        width: 100%;
-        min-width: 0; /* Override desktop min-width */
-        box-sizing: border-box; /* Include padding in width */
-        border-left: none;
-        border-right: none;
-        border-bottom: 1px solid var(--massa-border-color);
-        padding: 20px;
-    }
-
-    .menu {
-        padding-top: 20px; /* Remove extra top padding */
-    }
-
-    .calculator {
-        padding: 1.5em; /* Reduce padding on smaller screens */
-    }
+    background-color: var(--massa-dark-bg); border: 1px dashed var(--massa-border-color);
+    border-radius: 6px; color: var(--massa-text-secondary);
 }

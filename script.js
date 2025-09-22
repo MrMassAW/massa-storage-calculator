@@ -3,19 +3,20 @@ document.addEventListener('DOMContentLoaded', () => {
     const totalSizeInput = document.getElementById('totalSize');
     const bytecodeSizeInput = document.getElementById('bytecodeSize');
     const resultDiv = document.getElementById('result');
-    const menuItems = document.querySelectorAll('#examplesMenu li');
+    const examplesDropdown = document.getElementById('examplesDropdown'); // New dropdown element
     const calculateBtn = document.getElementById('calculateBtn');
     const breakdownContainer = document.getElementById('calculationBreakdown');
 
-    document.getElementById('examplesMenu').addEventListener('click', (event) => {
-        if (event.target && event.target.nodeName === "LI") {
-            menuItems.forEach(item => item.classList.remove('active'));
-            event.target.classList.add('active');
-            const files = event.target.getAttribute('data-files');
-            const sizeInMB = event.target.getAttribute('data-size');
-            const bytecode = event.target.getAttribute('data-bytecode');
-            fillAndCalculate(files, sizeInMB, bytecode);
-        }
+    // --- Event Listener for the Dropdown ---
+    examplesDropdown.addEventListener('change', (event) => {
+        const selectedOption = event.target.options[event.target.selectedIndex];
+        if (!selectedOption.value) return; // Ignore the default disabled option
+
+        const files = selectedOption.getAttribute('data-files');
+        const sizeInMB = selectedOption.getAttribute('data-size');
+        const bytecode = selectedOption.getAttribute('data-bytecode');
+        
+        fillAndCalculate(files, sizeInMB, bytecode);
     });
 
     calculateBtn.addEventListener('click', calculateCost);
@@ -39,10 +40,10 @@ document.addEventListener('DOMContentLoaded', () => {
         const bytecodeSizeKB = parseFloat(bytecodeSizeInput.value);
 
         if (isNaN(numFiles) || isNaN(totalSizeMB) || numFiles < 0 || totalSizeMB < 0) {
-            resultDiv.innerHTML = `<p style="color: #ff4d4d;">Please enter valid, non-negative numbers.</p>`;
+            resultDiv.innerHTML = `<p style="color: #ff4d4d;">Please enter valid numbers to see the results.</p>`;
             breakdownContainer.innerHTML = `
                 <div class="step-placeholder">
-                    <p>Enter values in the calculator to see the step-by-step resolution here.</p>
+                    <p>Enter values or select an example to see the step-by-step resolution here.</p>
                 </div>`;
             return;
         }

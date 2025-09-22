@@ -11,59 +11,56 @@
 </head>
 <body>
 
-<div class="main-layout">
+<main class="app-container">
     <div class="logo-area">
         <img src="path/to/massa_logo.png" alt="Massa Logo" class="massa-logo">
     </div>
 
-    <nav class="menu">
-        <h3>Examples (Cheapest to Most Expensive)</h3>
-        <ul id="examplesMenu">
-            <li data-files="50" data-size="100" data-bytecode="10">🏢 Business Profile Site</li>
-            <li data-files="2500" data-size="200" data-bytecode="50">✍️ Personal Blog</li>
-            <li data-files="5000" data-size="5120" data-bytecode="200">🛍️ Shopify-like Store</li>
-            <li data-files="50000" data-size="5120" data-bytecode="150">📚 Wikipedia-like Site</li>
-            <li data-files="1000000" data-size="10240" data-bytecode="250">📂 Code Repository</li>
-            <li data-files="5000" data-size="15360" data-bytecode="30">📖 E-book Library</li>
-            <li data-files="2000" data-size="20480" data-bytecode="40">🖼️ High-Res Photo Gallery</li>
-            <li data-files="5000" data-size="25600" data-bytecode="300">🎮 Simple Game Assets</li>
-            <li data-files="10000" data-size="40960" data-bytecode="400">🤳 Social Media Feed</li>
-            <li data-files="100000" data-size="51200" data-bytecode="500">❤️ Dating-like Site</li>
-            <li data-files="500000" data-size="61440" data-bytecode="350">🗣️ Online Forum</li>
-            <li data-files="10000" data-size="81920" data-bytecode="200">🎵 Music Streaming Service</li>
-            <li data-files="100000" data-size="102400" data-bytecode="600">💎 NFT Marketplace</li>
-            <li data-files="100" data-size="512000" data-bytecode="400">🎬 Decentralized Streaming</li>
-            <li data-files="100" data-size="1024000" data-bytecode="100">🔬 Scientific Data Archive</li>
-        </ul>
-    </nav>
+    <section class="calculator">
+        <h2>Massa Storage & Refund Calculator</h2>
+        <p class="tagline">Calculate your one-time storage cost and potential refund on the Massa blockchain.</p>
 
-    <div class="calculator-container">
-        <div class="calculator">
-            <h2>Massa Storage & Refund Calculator</h2>
-            <p class="tagline">Calculate your one-time storage cost and potential refund on the Massa blockchain.</p>
+        <label for="examplesDropdown">Select an Example (Optional)</label>
+        <select id="examplesDropdown">
+            <option value="" disabled selected>-- Choose a use case --</option>
+            <option data-files="50" data-size="100" data-bytecode="10">🏢 Business Profile Site</option>
+            <option data-files="2500" data-size="200" data-bytecode="50">✍️ Personal Blog</option>
+            <option data-files="5000" data-size="5120" data-bytecode="200">🛍️ Shopify-like Store</option>
+            <option data-files="50000" data-size="5120" data-bytecode="150">📚 Wikipedia-like Site</option>
+            <option data-files="1000000" data-size="10240" data-bytecode="250">📂 Code Repository</option>
+            <option data-files="5000" data-size="15360" data-bytecode="30">📖 E-book Library</option>
+            <option data-files="2000" data-size="20480" data-bytecode="40">🖼️ High-Res Photo Gallery</option>
+            <option data-files="5000" data-size="25600" data-bytecode="300">🎮 Simple Game Assets</option>
+            <option data-files="10000" data-size="40960" data-bytecode="400">🤳 Social Media Feed</option>
+            <option data-files="100000" data-size="51200" data-bytecode="500">❤️ Dating-like Site</option>
+            <option data-files="500000" data-size="61440" data-bytecode="350">🗣️ Online Forum</option>
+            <option data-files="10000" data-size="81920" data-bytecode="200">🎵 Music Streaming Service</option>
+            <option data-files="100000" data-size="102400" data-bytecode="600">💎 NFT Marketplace</option>
+            <option data-files="100" data-size="512000" data-bytecode="400">🎬 Decentralized Streaming</option>
+            <option data-files="100" data-size="1024000" data-bytecode="100">🔬 Scientific Data Archive</option>
+        </select>
 
-            <label for="numFiles">Number of Data Entries (Files):</label>
-            <input type="number" id="numFiles" placeholder="e.g., 2500">
+        <label for="numFiles">Number of Data Entries (Files):</label>
+        <input type="number" id="numFiles" placeholder="e.g., 2500">
 
-            <label for="totalSize">Total Data Size (in MB):</label>
-            <input type="number" id="totalSize" placeholder="e.g., 200">
-            
-            <input type="hidden" id="bytecodeSize" value="100">
+        <label for="totalSize">Total Data Size (in MB):</label>
+        <input type="number" id="totalSize" placeholder="e.g., 200">
+        
+        <input type="hidden" id="bytecodeSize" value="100">
 
-            <button id="calculateBtn">Calculate Cost</button>
+        <button id="calculateBtn">Calculate Cost</button>
+    </section>
 
-            <div id="result">Select an example or enter custom values.</div>
-            <p class="disclaimer">Estimates based on an avg. key size of 64 bytes.</p>
-        </div>
-    </div>
+    <section id="result" class="result-section">
+        </section>
 
-    <aside class="explanation-panel">
+    <section class="details-section">
         <h3>Calculation Breakdown</h3>
         <p>Follow the steps below to see how your total cost is derived from the official formula.</p>
         
         <div id="calculationBreakdown">
             <div class="step-placeholder">
-                <p>Enter values in the calculator to see the step-by-step resolution here.</p>
+                <p>Enter values or select an example to see the step-by-step resolution here.</p>
             </div>
         </div>
         
@@ -73,9 +70,9 @@
         <div class="assumption-box">
             To simplify, we assume the average size of a data "key" (like a filename or ID) is <strong>64 bytes</strong>.
         </div>
-    </aside>
+    </section>
 
-</div>
+</main>
 
 <script src="script.js" defer></script>
 </body>
