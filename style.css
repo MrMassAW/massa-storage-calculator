@@ -131,6 +131,8 @@ button:hover { transform: scale(1.02); }
 
 /* Explanation Panel & Breakdown Styles */
 .explanation-panel h4 { margin-top: 25px; margin-bottom: 10px; }
+.explanation-panel ul { padding-left: 20px; }
+.explanation-panel li { margin-bottom: 8px; }
 .explanation-panel hr { border: none; border-top: 1px solid rgba(0,0,0,0.1); margin: 25px 0; }
 .explanation-panel .assumption-box {
     background-color: rgba(255, 228, 181, 0.5);
@@ -148,36 +150,60 @@ button:hover { transform: scale(1.02); }
     padding: 15px;
     margin-bottom: 15px;
 }
-#calculationBreakdown h5 {
-    margin-top: 0;
-    margin-bottom: 10px;
-    font-size: 1.1em;
-    color: var(--postit-text);
-}
-#calculationBreakdown p {
-    font-family: 'Roboto Mono', monospace;
-    font-size: 0.9em;
-    line-height: 1.6;
-    margin: 5px 0;
-}
-#calculationBreakdown .value {
-    color: var(--massa-blue);
-    font-weight: 600;
-}
+#calculationBreakdown h5 { margin-top: 0; margin-bottom: 10px; font-size: 1.1em; color: var(--postit-text); }
+#calculationBreakdown p { font-family: 'Roboto Mono', monospace; font-size: 0.9em; line-height: 1.6; margin: 5px 0; }
+#calculationBreakdown .value { color: var(--massa-blue); font-weight: 600; }
 #calculationBreakdown .final-cost {
-    display: block;
-    margin-top: 10px;
-    padding: 8px;
-    background-color: rgba(0, 0, 255, 0.1);
-    border-radius: 4px;
-    font-size: 1.1em;
-    text-align: center;
+    display: block; margin-top: 10px; padding: 8px;
+    background-color: rgba(0, 0, 255, 0.1); border-radius: 4px;
+    font-size: 1.1em; text-align: center;
 }
 .step-placeholder {
-    text-align: center;
-    padding: 40px 20px;
-    background-color: rgba(0,0,0,0.02);
-    border: 1px dashed rgba(0,0,0,0.1);
-    border-radius: 6px;
-    color: #888;
+    text-align: center; padding: 40px 20px;
+    background-color: rgba(0,0,0,0.02); border: 1px dashed rgba(0,0,0,0.1);
+    border-radius: 6px; color: #888;
+}
+
+
+/* --- MOBILE RESPONSIVE STYLES --- */
+@media (max-width: 800px) {
+    .main-layout {
+        flex-direction: column; /* Stack panels vertically */
+        height: auto; /* Allow content to scroll */
+    }
+
+    .logo-area {
+        position: relative; /* Make logo part of the normal flow */
+        top: 0;
+        left: 0;
+        padding: 15px;
+        background-color: var(--massa-card-bg);
+    }
+    .massa-logo {
+        height: 30px;
+    }
+
+    /* Re-order panels for mobile */
+    .calculator-container { order: 1; }
+    .menu { order: 2; }
+    .explanation-panel { order: 3; }
+    
+    /* Resize panels to full width */
+    .menu, .explanation-panel, .calculator-container {
+        width: 100%;
+        min-width: 0; /* Override desktop min-width */
+        box-sizing: border-box; /* Include padding in width */
+        border-left: none;
+        border-right: none;
+        border-bottom: 1px solid var(--massa-border-color);
+        padding: 20px;
+    }
+
+    .menu {
+        padding-top: 20px; /* Remove extra top padding */
+    }
+
+    .calculator {
+        padding: 1.5em; /* Reduce padding on smaller screens */
+    }
 }
